@@ -1,0 +1,22 @@
+{% extends 'polls/base.html' %}
+{% block content %}
+<h2>{{ question.question_text }}</h2>
+
+{% if not user.is_authenticated %}
+  <p><em>You need to <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to vote.</em></p>
+{% endif %}
+
+<!-- Validation errors from VoteForm appear here -->
+{% for error in form.choice.errors %}
+  <p class="error">{{ error }}</p>
+{% endfor %}
+
+<form action="{% url 'polls:vote' question.id %}" method="post" novalidate>
+  {% csrf_token %}
+  {% for radio in form.choice %}
+    <label>{{ radio.tag }} {{ radio.choice_label }}</label>
+  {% endfor %}
+  <button type="submit">Vote</button>
+</form>
+<p><a href="{% url 'polls:results' question.id %}">View results</a></p>
+{% endblock %}
